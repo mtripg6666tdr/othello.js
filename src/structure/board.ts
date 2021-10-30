@@ -1,5 +1,5 @@
 import { GameConfig } from "..";
-import { CellNums, CellTypes, StonePutConfig, StonePutResult, StoneTypes } from "../definition";
+import { CellNums, CellPoint, CellTypes, StonePutConfig, StonePutResult, StoneTypes } from "../definition";
 import { CellStatus } from "./cellstate";
 import { StoneStatus } from "./stonestate";
 
@@ -36,8 +36,17 @@ export class OthelloBoardManager {
     return new StoneStatus(this.sumCell(cell => cell.type === type));
   }
 
+  get nextStone():StoneTypes{
+    return this.getLastMover() === "black" ? "white" : "black";
+  }
+
+  get log():readonly StonePutResult[]{
+    return this._log;
+  }
+
   put(config:StonePutConfig):StonePutResult{
-    let winner = null as StoneTypes|null;
+    let winner = null as StoneTypes|null|"draw";
+    const modified = [] as CellStatus[];
     if(config.type === "put"){
       const target = this.getCell(config.x, config.y);
       if(this.getLastMover() === config.current){
@@ -55,11 +64,63 @@ export class OthelloBoardManager {
         // まわりに種類の異なる(裏されうる)石がないセル
         throw new Error("the cell surrounded by no stone of the other type");
       }
-      // TODO: 裏返す処理
+      
+      const turnCells = {
+        row: false,
+        column: false,
+        plusdiagonal: false,
+        minusdiagonal: false
+      };
+      const cellsCache = {
+        row: null as CellStatus[],
+        column: null as CellStatus[],
+        plusdiagonal: null as CellStatus[],
+        minusdiagonal: null as CellStatus[]
+      }
+      // 横方向
+      const row = cellsCache.row = this.getRow(config.y)
+      turnCells.row = this.replaceCells(config, config.x, row, "plus")
+                    || this.replaceCells(config, config.x, row, "minus");
+      // 縦方向
+      const column = cellsCache.column = this.getColumn(config.x);
+      turnCells.column = this.replaceCells(config, config.y, column, "plus")
+                      || this.replaceCells(config, config.y, column, "minus");
+      // +斜め方向
+      const plusdiagonal = cellsCache.plusdiagonal = this.getPlusDiagonals(config);
+      turnCells.plusdiagonal = this.replaceCells(config, plusdiagonal.findIndex(cell => config.x === cell.x) as CellNums, plusdiagonal, "plus")
+                            || this.replaceCells(config, plusdiagonal.findIndex(cell => config.x === cell.x) as CellNums, plusdiagonal, "minus");
+      // -斜め方向
+      const minusdiagonal = cellsCache.minusdiagonal = this.getMinusDiagnals(config);
+      turnCells.minusdiagonal = this.replaceCells(config, minusdiagonal.findIndex(cell => config.x === cell.x) as CellNums, minusdiagonal, "plus")
+                              || this.replaceCells(config, minusdiagonal.findIndex(cell => config.x === cell.x) as CellNums, minusdiagonal, "minus");
+      // 全体で裏返す部分あるか
+      const existsTurnCell = turnCells.row || turnCells.column || turnCells.plusdiagonal || turnCells.minusdiagonal;
+      // なければ
+      if(!existsTurnCell){
+        throw new Error("no cell to turn");
+      }
+      // 裏返しを反映
+      (["row", "column", "plusdiagonal", "minusdiagonal"] as (keyof typeof turnCells)[]).forEach(direction => {
+        if(turnCells[direction]){
+          cellsCache[direction].forEach(cell => {
+            if(this.getCell(cell.x, cell.y) !== cell){
+              this._data[cell.x][cell.y] = cell;
+              modified.push(cell);
+            }
+          });
+        }
+      });
+      this.setCell(config.current, config);
     }
-    const result = {
+    if(this.sumCell(cell => cell.type === "none") === 0){
+      const white = this.sumCell(cell => cell.type === "white");
+      const black = this.sumCell(cell => cell.type === "black");
+      winner = white > black ? "white" : white === black ? "draw" : white < black ? "black" : null;
+    }
+    const result:StonePutResult = {
       ...config,
-      winner
+      winner,
+      modified
     };
     this._log.push(result);
     return result;
@@ -72,7 +133,7 @@ export class OthelloBoardManager {
     return this;
   }
 
-  private getCell(x:CellNums, y:CellNums):CellStatus{
+  getCell(x:CellNums, y:CellNums):CellStatus{
     return this._data[x][y];
   }
 
@@ -86,14 +147,14 @@ export class OthelloBoardManager {
   }
 
   private getColumn(x:CellNums){
-    return this._data[x];
+    return [...this._data[x]];
   }
 
   private getRow(y:CellNums){
     return [...Array(8)].map((_, i) => this._data[i][y]);
   }
 
-  private getPlusDiagonals(center:{x:CellNums, y:CellNums}){
+  private getPlusDiagonals(center: CellPoint){
     const intercept = center.x + center.y;
     const result = [] as CellStatus[];
     for(let i = 0; i <= 7; i++){
@@ -105,7 +166,7 @@ export class OthelloBoardManager {
     return result.filter(cell => Boolean(cell));
   }
 
-  private getMinusDiagnals(center:{x:CellNums, y:CellNums}){
+  private getMinusDiagnals(center: CellPoint){
     const intercept = center.x - center.y;
     const result = [] as CellStatus[];
     for(let i = 0; i <= 7; i++){
@@ -121,7 +182,7 @@ export class OthelloBoardManager {
     if(this._log.length > 0){
       return this._log[this._log.length - 1].current
     }else{
-      return this._config.firstMove;
+      return this._config.firstMove === "black" ? "white" : "black";
     }
   }
 
@@ -133,5 +194,59 @@ export class OthelloBoardManager {
       });
     });
     return result;
+  }
+
+  private replaceCells(config:StonePutConfig, center: CellNums, target: CellStatus[], direction:"plus"|"minus"):boolean {
+    if(
+      target.length === center + 1 && direction === "plus" 
+      || center === 0 && direction === "minus"
+      ){
+        return false;
+      }
+    if(direction === "plus"){
+      let start = -1;
+      let end = -1;
+      for(let i = center + 1; i < target.length; i++){
+        if(target[i].type === "none") break;
+        if(target[i].type === config.current) break;
+        if(start === -1){
+          start = i;
+          end = i;
+        }else if(end + 1 === i){
+          end = i;
+        }else{
+          break;
+        }
+      }
+      if(start === -1 || target[end + 1].type !== config.current){
+        return false;
+      }
+      for(let i = start; i <= end; i++){
+        target[i] = new CellStatus(config.current, target[i].x, target[i].y);
+      }
+      return true;
+    }else{
+      let start = -1;
+      let end = -1;
+      for(let i = center - 1; i >= 0; i--){
+        if(target[i].type === "none") break;
+        if(target[i].type === config.current) break;
+        if(start === -1){
+          start = i;
+          end = i;
+        }else if(end - 1 === i){
+          end = i;
+        }else{
+          break;
+        }
+      }
+      if(start === -1 || target[end - 1].type !== config.current){
+        return false;
+      }
+      for(let i = start; i >= end; i--){
+        target[i] = new CellStatus(config.current, target[i].x, target[i].y);
+      }
+      return true;
+    }
   }
 }

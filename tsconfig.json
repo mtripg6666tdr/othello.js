@@ -3,7 +3,9 @@
     "module": "CommonJS",
     "target": "ES6",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist/",
+    "sourceMap": true,
   },
   "include": [
     "./src/**/*.ts"

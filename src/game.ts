@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { defaultGameConfig, GameConfig, StonePutConfig } from "./definition";
+import { CellNums, defaultGameConfig, GameConfig, StonePutConfig } from "./definition";
 import { OthelloBoardManager } from "./structure/board";
 import { GameStatus } from "./structure/gamestate";
 import { StoneStatus } from "./structure/stonestate";
@@ -32,5 +32,23 @@ export class Game extends EventEmitter {
   }
   put(config: StonePutConfig){
     this._board.put(config);
+  }
+  logBoard(){
+    console.log("  ０１２３４５６７");
+    console.log("  ――――――――");
+    for(let y = 0; y < 8; y++){
+      const line = y + "|" + [...Array(8)].map((_,x) => {
+        const type = this._board.getCell(x as CellNums, y as CellNums).type;
+        switch(type){
+          case "black": return "●";
+          case "white": return "○";
+          case "none": return "　";
+        }
+      }).join("") + "|";
+      console.log(line);
+    }
+    console.log("  ――――――――");
+    console.log("Next: " + (this._board.nextStone === "black" ? "●" : "○") + this._board.nextStone);
+    console.log("Turn count: " +  this.board.log.length);
   }
 }
