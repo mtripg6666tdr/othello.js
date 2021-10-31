@@ -218,7 +218,7 @@ export class OthelloBoardManager {
           break;
         }
       }
-      if(start === -1 || target[end + 1].type !== config.current){
+      if(start === -1 || !target[end + 1] || target[end + 1].type !== config.current){
         return false;
       }
       for(let i = start; i <= end; i++){
@@ -240,7 +240,7 @@ export class OthelloBoardManager {
           break;
         }
       }
-      if(start === -1 || target[end - 1].type !== config.current){
+      if(start === -1 || !target[end - 1] || target[end - 1].type !== config.current){
         return false;
       }
       for(let i = start; i >= end; i--){
