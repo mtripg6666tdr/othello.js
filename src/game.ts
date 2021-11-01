@@ -1,17 +1,17 @@
-import { EventEmitter } from "events";
-import { CellNums, defaultGameConfig, GameConfig, StonePutConfig } from "./definition";
+import { CellNums, CellTypes, defaultGameConfig, GameConfig, StonePutConfig, StonePutResult } from "./definition";
 import { OthelloBoardManager } from "./structure/board";
 import { GameStatus } from "./structure/gamestate";
 import { StoneStatus } from "./structure/stonestate";
 
-export class Game extends EventEmitter {
+export type GameEvent = CellTypes|"finish";
+export class Game {
   private _board = null as OthelloBoardManager;
   private _state:GameStatus = {
-    status: "finish"
+    status: "ready"
   };
   private _config:GameConfig = null;
+  private _listener:((event:GameEvent)=>void)[] = [];
   constructor(config: GameConfig){
-    super();
     this._config = {...config, ...defaultGameConfig};
     this._board = new OthelloBoardManager(this._config);
   }
@@ -31,7 +31,12 @@ export class Game extends EventEmitter {
     return this._board;
   }
   put(config: StonePutConfig){
-    this._board.put(config);
+    const result = this._board.put(config) as StonePutResult;
+    this.emit(this._board.nextStone);
+    if(result.winner){
+      this.emit("finish");
+    }
+    return result;
   }
   logBoard(){
     console.log("  ０１２３４５６７");
@@ -50,5 +55,17 @@ export class Game extends EventEmitter {
     console.log("  ――――――――");
     console.log("Next: " + (this._board.nextStone === "black" ? "●" : "○") + this._board.nextStone);
     console.log("Turn count: " +  this.board.log.length);
+  }
+  addListener(fn:(event:GameEvent)=>void){
+    this._listener.push(fn);
+  }
+  removeListener(fn:(event:GameEvent)=>void){
+    const index = this._listener.findIndex(l => l === fn);
+    if(!index) return false;
+    this._listener.splice(index, 1);
+    return true;
+  }
+  emit(event:GameEvent){
+    this._listener.forEach(listener => listener(event));
   }
 }

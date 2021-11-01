@@ -25,6 +25,10 @@ export class OthelloBoardManager {
   }
 
   constructor(private _config:GameConfig) {
+    this.init();
+  }
+
+  private init(){
     this._data = [...Array(8)].map((_, x) => [...Array(8)].map((_, y) => new CellStatus("none", x as CellNums, y as CellNums)));
     this
       .setCell("black", {x: 3, y: 3}, {x: 4, y: 4})
@@ -44,24 +48,33 @@ export class OthelloBoardManager {
     return this._log;
   }
 
-  put(config:StonePutConfig):StonePutResult{
+  put(config:StonePutConfig, dryrun:boolean = false):StonePutResult|false{
+    if(this.log[this.log.length - 1] && this.log[this.log.length - 1].winner){
+      if(dryrun){
+        return false;
+      }
+      throw new Error("the game has already finished");
+    }
     let winner = null as StoneTypes|null|"draw";
     const modified = [] as CellStatus[];
     if(config.type === "put"){
       const target = this.getCell(config.x, config.y);
-      if(this.getLastMover() === config.current){
+      if(!dryrun && this.getLastMover() === config.current){
         // ２ユーザー連続
         throw new Error("two consecutive mover");
       }else if(target.type !== "none"){
         // すでに置かれているセル
+        if(dryrun) return false;
         throw new Error("the cell has already been put a stone on");
       }
       const arrounds = this.getAroundCells(config.x, config.y);
       if(arrounds.length === 0){
         // まわりに石がないセル
+        if(dryrun) return false;
         throw new Error("the cell surrounded by no stone");
       }else if(arrounds.filter(c => c.type !== target.type).length === 0){
         // まわりに種類の異なる(裏されうる)石がないセル
+        if(dryrun) return false;
         throw new Error("the cell surrounded by no stone of the other type");
       }
       
@@ -97,22 +110,25 @@ export class OthelloBoardManager {
       const existsTurnCell = turnCells.row || turnCells.column || turnCells.plusdiagonal || turnCells.minusdiagonal;
       // なければ
       if(!existsTurnCell){
+        if(dryrun) return false;
         throw new Error("no cell to turn");
       }
       // 裏返しを反映
-      (["row", "column", "plusdiagonal", "minusdiagonal"] as (keyof typeof turnCells)[]).forEach(direction => {
-        if(turnCells[direction]){
-          cellsCache[direction].forEach(cell => {
-            if(this.getCell(cell.x, cell.y) !== cell){
-              this._data[cell.x][cell.y] = cell;
-              modified.push(cell);
-            }
-          });
-        }
-      });
-      this.setCell(config.current, config);
+      if(!dryrun){
+        (["row", "column", "plusdiagonal", "minusdiagonal"] as (keyof typeof turnCells)[]).forEach(direction => {
+          if(turnCells[direction]){
+            cellsCache[direction].forEach(cell => {
+              if(this.getCell(cell.x, cell.y) !== cell){
+                this._data[cell.x][cell.y] = cell;
+                modified.push(cell);
+              }
+            });
+          }
+        });
+        this.setCell(config.current, config);
+      }
     }
-    if(this.sumCell(cell => cell.type === "none") === 0){
+    if(this.sumCell(cell => cell.type === "none") === 0 || (!dryrun && this.getAbleToPut("black").length + this.getAbleToPut("white").length === 0)){
       const white = this.sumCell(cell => cell.type === "white");
       const black = this.sumCell(cell => cell.type === "black");
       winner = white > black ? "white" : white === black ? "draw" : white < black ? "black" : null;
@@ -122,8 +138,28 @@ export class OthelloBoardManager {
       winner,
       modified
     };
-    this._log.push(result);
+    if(!dryrun){
+      this._log.push(result);
+    }
     return result;
+  }
+
+  reset(log:StonePutResult[]){
+    this.init();
+    log.forEach(l => {
+      if(l.type === "pass"){
+        this.put({
+          type: l.type,
+          current: l.current,
+        });
+      }else{
+        this.put({
+          type: l.type,
+          current: l.current,
+          x: l.x, y: l.y
+        })
+      }
+    })
   }
 
   private setCell(type: CellTypes, ...positions: {x: CellNums, y: CellNums}[]){
@@ -146,11 +182,23 @@ export class OthelloBoardManager {
     return cells;
   }
 
-  private getColumn(x:CellNums){
+  getAbleToPut(current:StoneTypes):CellPoint[]{
+    const points = [] as CellPoint[];
+    for(let x = 0 as CellNums; x < 8; x++){
+      for(let y = 0 as CellNums; y < 8; y++){
+        if(this.put({type: "put", current, x, y}, /* dryrun */ true)){
+          points.push({x, y});
+        }
+      }
+    }
+    return points;
+  }
+
+  getColumn(x:CellNums){
     return [...this._data[x]];
   }
 
-  private getRow(y:CellNums){
+  getRow(y:CellNums){
     return [...Array(8)].map((_, i) => this._data[i][y]);
   }
 

@@ -1,0 +1,121 @@
+body.dark {
+  background-color: rgb(20, 20 ,20);
+}
+body.dark *:not(button) {
+  color: white;
+}
+body.dark div.thead span, body.dark div.lhead span {
+  color: black;
+}
+label {
+  user-select: none;
+}
+div#app_container {
+  position: absolute;
+  top: 20vh;
+  left: calc(50vw - 20vh);
+}
+div#app {
+  border: 1px solid;
+  display: block;
+}
+div#app div { 
+  display: flex;
+}
+div.sumi, div.thead, div.lhead, div#app div div.cell {
+  background-color: greenyellow;
+  width: 5vh;
+  height: 5vh;
+  line-height: 5vh;
+  user-select: none;
+  box-sizing: border-box;
+}
+div.thead, div.sumi {
+  font-weight: 800;
+  border-bottom: 1px solid black;
+}
+div.lhead, div.sumi {
+  font-weight: 800;
+  border-right: 1px solid black;
+}
+div.thead span, div.lhead span {
+  margin: 0px auto;
+  display: block;
+}
+div.cell {
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  position: relative;
+  cursor: pointer;
+}
+div.cell.black::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  border-radius: 100%;
+}
+div.cell.white::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 100%;
+}
+div.cell.black_point::before, div.cell.white_point::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: calc(50% - 2px);
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  background-color: black;
+  border-radius: 4px;
+}
+div.cell.black_point:hover::after{
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  border-radius: 100%;
+  opacity: 0.4;
+}
+div.cell.white_point:hover::after{
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 100%;
+  opacity: 0.6;
+}
+div.msg_container {
+  width: 40vh;
+}
+.red {
+  color: red;
+}
+.hidden {
+  display: none;
+}
+div.stat * {
+  display: inline-block;
+  margin-right: 5px;
+  margin-left: 5px;
+}
