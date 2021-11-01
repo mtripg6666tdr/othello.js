@@ -230,6 +230,8 @@
         winner = game.board.log[game.board.log.length - 1].winner;
       }
       catch{}
+    }else{
+      winner = null;
     }
   }
   function updateBoard() {
@@ -255,9 +257,7 @@
     nextElemT.textContent = "Next: " + (!winner ? game.board.nextStone : "-");
     nextElemT.dataset.next = game.board.nextStone;
     countT.textContent = "Count: " + game.board.log.length;
-    if(winner){
-      pass.disabled = true;
-    }
+    pass.disabled = Boolean(winner);
     whiteCount.textContent = "White: " + game.board.getInfo("white").count;
     blackCount.textContent = "Black: " + game.board.getInfo("black").count;
   }
