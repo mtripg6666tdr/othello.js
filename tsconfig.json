@@ -4,8 +4,10 @@
     "target": "ES6",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "dist/",
+    "outDir": "./dist/",
     "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./typings/"
   },
   "include": [
     "./src/**/*.ts"
