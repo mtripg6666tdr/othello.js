@@ -1,0 +1,4 @@
+docs/* linguist-vendored
+sample/* linguist-vendored
+lib/* linguist-vendored
+typings/* linguist-vendored
