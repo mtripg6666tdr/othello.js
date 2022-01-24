@@ -9,7 +9,7 @@
     "build": "tsc && webpack",
     "build:node": "tsc",
     "build:lib": "webpack",
-    "docs": "typedoc ./src/index.ts"
+    "docs": "typedoc ./src/index.ts --excludePrivate"
   },
   "keywords": [
     "othello",
