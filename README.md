@@ -1,7 +1,7 @@
 # othello.js
 An easy-to-use othello implementation with TypeScript.  
-[Example usage](https://www.myon.ga/othello.js/sample/)  
-[Documentation](https://www.myon.ga/othello.js/docs/modules.html)  
+[Example usage](https://mtripg6666tdr.github.io/othello.js/sample/)  
+[Documentation](https://mtripg6666tdr.github.io/othello.js/docs/modules.html)  
 
 **This project is still under construction**
 
@@ -37,7 +37,7 @@ game.put({
 game.logBoard();
 ```
 # API
-See [documentation](docs/modules.html) to see more available api.
+See [documentation](https://mtripg6666tdr.github.io/othello.js/docs/modules.html) to see more available api.
 
 # License
 (c) mtripg6666tdr  
