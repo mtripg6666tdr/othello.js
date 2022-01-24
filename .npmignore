@@ -1,0 +1,8 @@
+node_modules
+.vscode
+docs
+lib
+sample
+src
+tsconfig.json
+webpack.config.js
