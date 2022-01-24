@@ -31,11 +31,7 @@ export declare class Game {
      * Current game status
      */
     get state(): GameStatus;
-    /**
-     * Set current game status
-     * DO NOT USE this accessor in you application.
-     */
-    set state(value: GameStatus);
+    private set state(value);
     /**
      * Current othello board
      */

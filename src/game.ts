@@ -48,11 +48,7 @@ export class Game {
     return this._state;
   }
   
-  /**
-   * Set current game status  
-   * DO NOT USE this accessor in you application.
-   */
-  set state(value:GameStatus) {
+  private set state(value:GameStatus) {
     this._state = value;
   }
 

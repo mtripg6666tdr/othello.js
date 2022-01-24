@@ -5,6 +5,11 @@ An easy-to-use othello implementation with TypeScript.
 
 **This project is still under construction**
 
+# Usage
+```ts
+import { Game } from "othello.js";
+```
+
 # License
 (c) mtripg6666tdr  
 See [LICENSE](LICENSE) for more info.
