@@ -16,14 +16,24 @@ import { StoneStatus } from "./stonestate";
   7
  */
 
+  /**
+   * Represents the othello board and a manager of it.
+   */
 export class OthelloBoardManager {
   private _data = null as CellStatus[][];
   private _log = [] as StonePutResult[];
 
+  /**
+   * The log of turns
+   */
   get putLog(): readonly StonePutResult[] {
     return this._log;
   }
 
+  /**
+   * Initialize the board manager
+   * @param _config the game config of the parent game.
+   */
   constructor(private _config:GameConfig) {
     this.init();
   }
@@ -36,18 +46,35 @@ export class OthelloBoardManager {
       ;
   }
 
+  /**
+   * Returns the status of the specific stone.
+   * @param type 
+   * @returns 
+   */
   getInfo(type:StoneTypes):StoneStatus{
     return new StoneStatus(this.sumCell(cell => cell.type === type));
   }
 
+  /**
+   * Represents the stone type of the next turn.
+   */
   get nextStone():StoneTypes{
     return this.getLastMover() === "black" ? "white" : "black";
   }
 
-  get log():readonly StonePutResult[]{
+  private get log():readonly StonePutResult[]{
     return this._log;
   }
 
+  /**
+   * Puts a stone  
+   * DO NOT use this method directly. You should call put method of the game class.  
+   * If not in dry-run and failed, will throw an error.
+   * @param config the config of this action
+   * @param dryrun If you only check the result of put, true, otherwise false.
+   * @returns the result of the action. If in dry-run and failed, false, otherwise, the result object
+   * @internal This method cannot use directly by user.
+   */
   put(config:StonePutConfig, dryrun:boolean = false):StonePutResult|false{
     if(this.log[this.log.length - 1] && this.log[this.log.length - 1].winner){
       if(dryrun){
@@ -144,6 +171,9 @@ export class OthelloBoardManager {
     return result;
   }
 
+  /**
+   * Recover the board from the log.
+   */
   reset(log:StonePutResult[]){
     this.init();
     log.forEach(l => {
@@ -169,8 +199,14 @@ export class OthelloBoardManager {
     return this;
   }
 
+  /**
+   * Returns the cell status of the specified coordinate.
+   * @param x x-coordinate of the cell you'd like to know.
+   * @param y y-coordinate of the cell you'd like to know.
+   * @returns the cell status of the specified coordinate.
+   */
   getCell(x:CellNums, y:CellNums):CellStatus{
-    return this._data[x][y];
+    return Object.assign(new CellStatus(), this._data[x][y]);
   }
 
   private getAroundCells(x:CellNums, y:CellNums){
@@ -182,6 +218,11 @@ export class OthelloBoardManager {
     return cells;
   }
 
+  /**
+   * Returns the all cell coordinates you can put on.
+   * @param current the current turn
+   * @returns the array of the complete list of the cells you can put on.
+   */
   getAbleToPut(current:StoneTypes):CellPoint[]{
     const points = [] as CellPoint[];
     for(let x = 0 as CellNums; x < 8; x++){
@@ -194,10 +235,20 @@ export class OthelloBoardManager {
     return points;
   }
 
+  /**
+   * Returns a array of the complete list of the cell on the column the specified x-coordinate.
+   * @param x x-coordinate
+   * @returns a array of the complete list of the cell on the column the specified x-coordinate.
+   */
   getColumn(x:CellNums){
     return [...this._data[x]];
   }
 
+  /**
+   * Returns a array of the complete list of the cell on the column the specified y-coordinate.
+   * @param y y-coordinate
+   * @returns a array of the complete list of the cell on the column the specified y-coordinate.
+   */
   getRow(y:CellNums){
     return [...Array(8)].map((_, i) => this._data[i][y]);
   }
