@@ -16,6 +16,10 @@
     "othello.js",
     "webpack"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtripg6666tdr/othello.js"
+  },
   "author": "mtripg6666tdr",
   "license": "MIT",
   "dependencies": {},
