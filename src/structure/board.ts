@@ -75,7 +75,7 @@ export class OthelloBoardManager {
    * @returns the result of the action. If in dry-run and failed, false, otherwise, the result object
    * @internal This method cannot use directly by user.
    */
-  put(config:StonePutConfig, dryrun:boolean = false):StonePutResult|false{
+  private put(config:StonePutConfig, dryrun:boolean = false):StonePutResult|false{
     if(this.log[this.log.length - 1] && this.log[this.log.length - 1].winner){
       if(dryrun){
         return false;

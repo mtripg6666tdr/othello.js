@@ -69,7 +69,7 @@ export class Game {
    * @returns the result of this action
    */
   put(config: StonePutConfig){
-    const result = this._board.put(config) as StonePutResult;
+    const result = this._board["put"](config) as StonePutResult;
     this.emit(this._board.nextStone);
     if(result.winner){
       this.emit("finish");

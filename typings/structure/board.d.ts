@@ -1,5 +1,5 @@
 import { GameConfig } from "..";
-import { CellNums, CellPoint, StonePutConfig, StonePutResult, StoneTypes } from "../definition";
+import { CellNums, CellPoint, StonePutResult, StoneTypes } from "../definition";
 import { CellStatus } from "./cellstate";
 import { StoneStatus } from "./stonestate";
 /**
@@ -39,7 +39,7 @@ export declare class OthelloBoardManager {
      * @returns the result of the action. If in dry-run and failed, false, otherwise, the result object
      * @internal This method cannot use directly by user.
      */
-    put(config: StonePutConfig, dryrun?: boolean): StonePutResult | false;
+    private put;
     /**
      * Recover the board from the log.
      */
