@@ -1,11 +1,13 @@
-import { CellTypes, GameConfig, StonePutConfig, StonePutResult } from "./definition";
+import { GameConfig, StonePutConfig, StonePutResult } from "./definition";
 import { OthelloBoardManager } from "./structure/board";
 import { GameStatus } from "./structure/gamestate";
 import { StoneStatus } from "./structure/stonestate";
-/**
- * Represents current game event
- */
-export declare type GameEvent = CellTypes | "finish";
+interface GameEventArgs {
+    ready: [config: GameConfig];
+    black: [game: Game];
+    white: [game: Game];
+    finish: [result: StonePutResult];
+}
 /**
  * Main game class
  */
@@ -13,7 +15,8 @@ export declare class Game {
     private _board;
     private _state;
     private _config;
-    private _listener;
+    private _events;
+    private _listeners;
     /**
      * Instantiate game object.
      * @param config configuration of new game
@@ -52,17 +55,18 @@ export declare class Game {
      * Add a listener of game event.
      * @param fn the listener you'd like to add.
      */
-    addListener(fn: (event: GameEvent) => void): void;
+    addListener<T extends keyof GameEventArgs>(event: T, fn: (...args: GameEventArgs[T]) => any): void;
     /**
      * Remove a listener of game event.
      * @param fn the listener you'd like to remove.
      * @returns Result of removal. If it's successful, true, otherwise false.
      */
-    removeListener(fn: (event: GameEvent) => void): boolean;
+    removeListener<T extends keyof GameEventArgs>(event: T, fn: (...args: GameEventArgs[T]) => any): boolean;
     /**
      * Emit a game event.
      * You shouldn't use this method.
      * @param event the event you'd like to emit.
      */
-    emit(event: GameEvent): void;
+    emit<T extends keyof GameEventArgs>(event: T, args: GameEventArgs[T]): void;
 }
+export {};

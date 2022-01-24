@@ -1,12 +1,15 @@
-import { CellNums, CellTypes, defaultGameConfig, GameConfig, StonePutConfig, StonePutResult } from "./definition";
+import { CellNums, defaultGameConfig, GameConfig, StonePutConfig, StonePutResult } from "./definition";
 import { OthelloBoardManager } from "./structure/board";
 import { GameStatus } from "./structure/gamestate";
 import { StoneStatus } from "./structure/stonestate";
 
-/**
- * Represents current game event
- */
-export type GameEvent = CellTypes|"finish";
+
+interface GameEventArgs {
+  ready: [config:GameConfig]
+  black: [game:Game]
+  white: [game:Game]
+  finish: [result:StonePutResult]
+}
 
 /**
  * Main game class
@@ -17,7 +20,10 @@ export class Game {
     status: "ready"
   };
   private _config:GameConfig = null;
-  private _listener:((event:GameEvent)=>void)[] = [];
+  private _events:{event:keyof GameEventArgs, args:any[]}[] = [];
+  private _listeners:{[event in keyof GameEventArgs]:((...args:GameEventArgs[event])=>any)[]} = {
+    ready: [], black: [], white: [], finish:[]
+  };
   /**
    * Instantiate game object.
    * @param config configuration of new game
@@ -25,6 +31,7 @@ export class Game {
   constructor(config: GameConfig){
     this._config = {...config, ...defaultGameConfig};
     this._board = new OthelloBoardManager(this._config);
+    this.emit("ready", [config]);
   }
 
   /**
@@ -66,9 +73,10 @@ export class Game {
    */
   put(config: StonePutConfig){
     const result = this._board["put"](config) as StonePutResult;
-    this.emit(this._board.nextStone);
     if(result.winner){
-      this.emit("finish");
+      this.emit("finish", [result]);
+    }else{
+      this.emit(this._board.nextStone, [this]);
     }
     return result;
   }
@@ -101,8 +109,8 @@ export class Game {
    * Add a listener of game event.
    * @param fn the listener you'd like to add.
    */
-  addListener(fn:(event:GameEvent)=>void){
-    this._listener.push(fn);
+  addListener<T extends keyof GameEventArgs>(event:T, fn:(...args:GameEventArgs[T])=>any){
+    (this._listeners[event] as ((...args:GameEventArgs[T])=>any)[]).push(fn);
   }
 
   /**
@@ -110,10 +118,11 @@ export class Game {
    * @param fn the listener you'd like to remove.
    * @returns Result of removal. If it's successful, true, otherwise false.
    */
-  removeListener(fn:(event:GameEvent)=>void){
-    const index = this._listener.findIndex(l => l === fn);
-    if(!index) return false;
-    this._listener.splice(index, 1);
+  removeListener<T extends keyof GameEventArgs>(event:T, fn:(...args:GameEventArgs[T])=>any){
+    const index = (this._listeners[event] as ((...args:GameEventArgs[T])=>any)[]).findIndex(l => l === fn);
+    if(!index) 
+      return false;
+    this._listeners[event].splice(index, 1);
     return true;
   }
 
@@ -122,7 +131,8 @@ export class Game {
    * You shouldn't use this method.
    * @param event the event you'd like to emit.
    */
-  emit(event:GameEvent){
-    this._listener.forEach(listener => listener(event));
+  emit<T extends keyof GameEventArgs>(event:T, args:GameEventArgs[T]){
+    (this._listeners[event] as ((...args:GameEventArgs[T])=>any)[]).forEach(listener => listener(...args));
+    this._events.push({event, args});
   }
 }
