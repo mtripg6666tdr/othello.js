@@ -1,6 +1,6 @@
 {
   "name": "othello.js",
-  "version": "1.0.0",
+  "version": "0.0.0-rc1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {

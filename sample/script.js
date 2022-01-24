@@ -133,7 +133,6 @@
           }
           catch(e){
             console.error(e);
-            messageT.textContent = e.message;
           }
         })
         row.push(cell);
