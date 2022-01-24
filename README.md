@@ -1,5 +1,5 @@
 # othello.js
-An easy-to-use othello implementation with TypeScript.  
+An easy-to-use othello game implementation in TypeScript.  
 [Example usage](https://mtripg6666tdr.github.io/othello.js/sample/)  
 [Documentation](https://mtripg6666tdr.github.io/othello.js/docs/modules.html)  
 
