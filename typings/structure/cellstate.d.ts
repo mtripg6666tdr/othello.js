@@ -1,4 +1,4 @@
-import { CellNums, CellTypes } from "../definition";
+import type { CellNums, CellTypes } from "../definition";
 /**
  * The status of a cell.
  */
