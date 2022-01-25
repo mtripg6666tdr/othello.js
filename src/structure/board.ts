@@ -1,5 +1,5 @@
-import { GameConfig } from "..";
-import { CellNums, CellPoint, CellTypes, StonePutConfig, StonePutResult, StoneTypes } from "../definition";
+import type { GameConfig } from "..";
+import type { CellNums, CellPoint, CellTypes, StonePutConfig, StonePutResult, StoneTypes } from "../definition";
 import { CellStatus } from "./cellstate";
 import { StoneStatus } from "./stonestate";
 
@@ -31,7 +31,7 @@ export class OthelloBoardManager {
   }
 
   /**
-   * Initialize the board manager
+   * Initialize the board manager.
    * @param _config the game config of the parent game.
    */
   constructor(private _config:GameConfig) {
@@ -43,7 +43,7 @@ export class OthelloBoardManager {
     this
       .setCell("black", {x: 3, y: 3}, {x: 4, y: 4})
       .setCell("white", {x: 3, y: 4}, {x: 4, y: 3})
-      ;
+    ;
   }
 
   /**
@@ -70,9 +70,9 @@ export class OthelloBoardManager {
    * Puts a stone  
    * DO NOT use this method directly. You should call put method of the game class.  
    * If not in dry-run and failed, will throw an error.
-   * @param config the config of this action
+   * @param config the config of this action.
    * @param dryrun If you only check the result of put, true, otherwise false.
-   * @returns the result of the action. If in dry-run and failed, false, otherwise, the result object
+   * @returns the result of the action. If in dry-run and failed, false, otherwise, the result object.
    * @internal This method cannot use directly by user.
    */
   private put(config:StonePutConfig, dryrun:boolean = false):StonePutResult|false{
@@ -220,7 +220,7 @@ export class OthelloBoardManager {
 
   /**
    * Returns the all cell coordinates you can put on.
-   * @param current the current turn
+   * @param current the current turn.
    * @returns the array of the complete list of the cells you can put on.
    */
   getAbleToPut(current:StoneTypes):CellPoint[]{
@@ -237,7 +237,7 @@ export class OthelloBoardManager {
 
   /**
    * Returns a array of the complete list of the cell on the column the specified x-coordinate.
-   * @param x x-coordinate
+   * @param x x-coordinate.
    * @returns a array of the complete list of the cell on the column the specified x-coordinate.
    */
   getColumn(x:CellNums){
@@ -246,7 +246,7 @@ export class OthelloBoardManager {
 
   /**
    * Returns a array of the complete list of the cell on the column the specified y-coordinate.
-   * @param y y-coordinate
+   * @param y y-coordinate.
    * @returns a array of the complete list of the cell on the column the specified y-coordinate.
    */
   getRow(y:CellNums){

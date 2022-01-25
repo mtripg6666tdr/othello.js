@@ -7,10 +7,10 @@ import { CellStatus } from "./structure/cellstate";
 export type StoneTypes = "black"|"white";
 
 /**
- * Represents the cell status
- * black: a black stone on the cell  
- * white: a white stone on the cell  
- * none:  none on the cell
+ * Represents the cell status.
+ * black: a black stone on the cell.  
+ * white: a white stone on the cell.  
+ * none:  none on the cell.
  */
 export type CellTypes = StoneTypes|"none";
 

@@ -1,8 +1,7 @@
 import { CellNums, defaultGameConfig, GameConfig, StonePutConfig, StonePutResult } from "./definition";
+import type { GameStatus } from "./structure/gamestate";
+import type { StoneStatus } from "./structure/stonestate";
 import { OthelloBoardManager } from "./structure/board";
-import { GameStatus } from "./structure/gamestate";
-import { StoneStatus } from "./structure/stonestate";
-
 
 interface GameEventArgs {
   ready: [config:GameConfig]
@@ -67,9 +66,9 @@ export class Game {
   }
 
   /**
-   * Put a stone
-   * @param config the configuration of this action
-   * @returns the result of this action
+   * Put a stone.
+   * @param config the configuration of this action.
+   * @returns the result of this action.
    */
   put(config: StonePutConfig){
     const result = this._board["put"](config) as StonePutResult;
