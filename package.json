@@ -9,7 +9,8 @@
     "build": "tsc && webpack",
     "build:node": "tsc",
     "build:lib": "webpack",
-    "docs": "typedoc ./src/index.ts --excludePrivate"
+    "docs": "typedoc ./src/index.ts --excludePrivate",
+    "clean": "rimraf ./dist ./typings"
   },
   "keywords": [
     "othello",
@@ -25,6 +26,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^16.11.6",
+    "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
     "typedoc": "^0.22.11",
     "typescript": "^4.4.4",
