@@ -40,5 +40,4 @@ game.logBoard();
 See [documentation](https://mtripg6666tdr.github.io/othello.js/docs/modules.html) to see more available api.
 
 # License
-(c) mtripg6666tdr  
 See [LICENSE](LICENSE) for more info.
