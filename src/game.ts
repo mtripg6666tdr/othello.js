@@ -121,7 +121,7 @@ export class Game {
    */
   removeListener<T extends keyof GameEventArgs>(event:T, fn:(...args:GameEventArgs[T])=>any){
     const index = (this._listeners[event] as ((...args:GameEventArgs[T])=>any)[]).findIndex(l => l === fn);
-    if(!index) 
+    if(index < 0) 
       return false;
     this._listeners[event].splice(index, 1);
     return true;
