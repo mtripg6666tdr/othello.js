@@ -5,9 +5,12 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist/",
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true,
-    "declarationDir": "./typings/"
+    "declarationDir": "./typings/",
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true
   },
   "include": [
     "./src/**/*.ts"
