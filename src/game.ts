@@ -85,10 +85,11 @@ export class Game {
    * Write current board image to console.  
    * You shoudn't use this in production.  
    * You can use this for the debug purpose only.  
+   * @param logger a function to log the game state. default console.log
    */
-  logBoard(){
-    console.log("  ０１２３４５６７");
-    console.log("  ――――――――");
+  logBoard(logger:(message:string)=>void = console.log){
+    logger("  ０１２３４５６７");
+    logger("  ――――――――");
     for(let y = 0; y < 8; y++){
       const line = y + "|" + [...Array(8)].map((_,x) => {
         const type = this._board.getCell(x as CellNums, y as CellNums).type;
@@ -100,9 +101,9 @@ export class Game {
       }).join("") + "|";
       console.log(line);
     }
-    console.log("  ――――――――");
-    console.log("Next: " + (this._board.nextStone === "black" ? "●" : "○") + this._board.nextStone);
-    console.log("Turn count: " +  this.board.putLog.length);
+    logger("  ――――――――");
+    logger("Next: " + (this._board.nextStone === "black" ? "●" : "○") + this._board.nextStone);
+    logger("Turn count: " +  this.board.putLog.length);
   }
 
   /**
