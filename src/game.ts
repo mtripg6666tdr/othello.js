@@ -107,6 +107,7 @@ export class Game {
 
   /**
    * Add a listener of game event.
+   * @param event the event name you'd like to listen to.
    * @param fn the listener you'd like to add.
    */
   addListener<T extends keyof GameEventArgs>(event:T, fn:(...args:GameEventArgs[T])=>any){
@@ -115,6 +116,7 @@ export class Game {
 
   /**
    * Remove a listener of game event.
+   * @param event the event name that the handle you'd like to remove has been listening to.
    * @param fn the listener you'd like to remove.
    * @returns Result of removal. If it's successful, true, otherwise false.
    */
@@ -130,6 +132,7 @@ export class Game {
    * Emit a game event.  
    * You shouldn't use this method.
    * @param event the event you'd like to emit.
+   * @param args the event args that will be sent to the handlers.
    */
   emit<T extends keyof GameEventArgs>(event:T, args:GameEventArgs[T]){
     (this._listeners[event] as ((...args:GameEventArgs[T])=>any)[]).forEach(listener => listener(...args));
