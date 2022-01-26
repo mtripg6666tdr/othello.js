@@ -8,7 +8,7 @@ An easy-to-use othello game implementation in TypeScript.
 # Installation
 - via CDN
 ```html
-<script defer src="https://cdn.jsdelivr.net/npm/othello.js@v0.0.0-rc2/lib/othello.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/othello.js@v0.0.0-rc3/lib/othello.min.js"></script>
 ```
 - via package manager
 ```bash
